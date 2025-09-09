@@ -12,14 +12,14 @@ Deployed live: https://fin-dash-seven.vercel.app
 Features
 --------
 
-Authentication
+**Authentication:**
 - User registration, login, and logout
 - Secure password hashing (bcrypt with salted hashes)
 - HTTP-only, secure cookies for sessions
 - Session persistence across reloads
 - Environment-aware cookie policy (SameSite=Lax in dev, SameSite=None + Secure in prod)
 
-Watchlist
+**Watchlist:**
 - Add or remove stock symbols
 - Prevents duplicates (server-side validation)
 - Persistent selection of the last viewed symbol
@@ -27,7 +27,7 @@ Watchlist
 - Auto-refreshing snapshots with latest price and percentage change (every 30s)
 - Friendly toasts for add/remove successes and errors
 
-Market Data & Charts
+**Market Data & Charts:**
 - Data fetched from Yahoo Finance via `yfinance`, cached in PostgreSQL
 - SQLAlchemy ORM + Alembic migrations manage schema
 - Candlestick charts built using **Lightweight Charts (TradingView library)**
@@ -38,7 +38,7 @@ Market Data & Charts
 - Configurable intervals: 1d, 1wk, 1mo
 - Badge above chart showing last close + % change
 
-Machine Learning Advisor
+**Machine Learning Advisor:**
 - Basic ML agent computes:
   - Probability of upward movement
   - Volatility regime (low / medium / high)
@@ -48,7 +48,7 @@ Machine Learning Advisor
   - Long-term investing
 - Results displayed as pills above the chart (e.g. “ML prob↑: 53.4% | Vol: 0.20 (low) | Hold”)
 
-User Experience Enhancements
+**User Experience Enhancements:**
 - Toasts for actions and errors (add/remove/watchlist failures, login issues)
 - Loading skeletons instead of plain “Loading…” text
 - Responsive grid layout for watchlist + chart
@@ -61,14 +61,14 @@ User Experience Enhancements
 Tech Stack
 ----------
 
-Frontend
+**Frontend:**
 - React 18 (Vite + TypeScript)
 - Tailwind CSS for styling
 - Lightweight Charts (TradingView)
 - Toast + skeleton loaders built with Tailwind utilities
 - Hosted on Vercel (auto-deploy from GitHub)
 
-Backend
+**Backend:**
 - FastAPI (Python web framework)
 - SQLAlchemy ORM
 - Alembic migrations for schema changes
@@ -78,7 +78,7 @@ Backend
 - yfinance for market data
 - Hosted on Render (auto-deploy from GitHub via render.yaml)
 
-Database
+**Database:**
 - PostgreSQL table schema managed with Alembic
 - Tables:
   - users (id, email, password_hash)
@@ -127,18 +127,18 @@ http://localhost:5173
 Deployment
 ----------
 
-- **Backend**
+**Backend:**
 - Hosted on Render (free web service plan)
 - Connected to GitHub with `render.yaml`
 - Auto-deploys on push to `main`
 - Runs with `ENV=prod` for secure cookies
 
-- **Frontend**
+**Frontend:**
 - Hosted on Vercel
 - Connected to GitHub (auto-deploys from main branch)
 - Configured with `VITE_API_URL` pointing to Render backend
 
-- **Database**
+**Database:**
 - Neon PostgreSQL (serverless, free tier)
 - Handles schema migrations from Alembic
 - Uses BIGINT for volume to avoid overflow
