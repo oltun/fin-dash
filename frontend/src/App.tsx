@@ -20,10 +20,10 @@ import type {
 } from "./lib/api";
 
 const RANGE_OPTIONS = ["1mo", "3mo", "6mo", "1y", "2y", "5y", "max"] as const;
-type Range = typeof RANGE_OPTIONS[number];
+type Range = (typeof RANGE_OPTIONS)[number];
 
 const INTERVAL_OPTIONS = ["1d", "1wk", "1mo"] as const;
-type Interval = typeof INTERVAL_OPTIONS[number];
+type Interval = (typeof INTERVAL_OPTIONS)[number];
 
 type Toast = { id: number; msg: string; variant?: "success" | "error" | "info" };
 
@@ -69,6 +69,35 @@ export default function App() {
       .catch(() => setStatus("error"));
   }, []);
 
+  useEffect(() => {
+    const url = `${import.meta.env.VITE_API_URL}/api/v1/auth/refresh`;
+    fetch(url, { method: "POST", credentials: "include" })
+      .catch(() => {
+      })
+      .finally(() => {
+        refreshMe();
+      });
+  }, []);
+
+  useEffect(() => {
+    const url = `${import.meta.env.VITE_API_URL}/api/v1/auth/refresh`;
+    const id = window.setInterval(() => {
+      fetch(url, { method: "POST", credentials: "include" }).catch(() => {});
+    }, 1000 * 60 * 60);
+    return () => window.clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    const url = `${import.meta.env.VITE_API_URL}/api/v1/auth/refresh`;
+    const onVis = () => {
+      if (document.visibilityState === "visible") {
+        fetch(url, { method: "POST", credentials: "include" }).catch(() => {});
+      }
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, []);
+
   async function refreshMe() {
     setCheckingMe(true);
     try {
@@ -80,9 +109,6 @@ export default function App() {
       setCheckingMe(false);
     }
   }
-  useEffect(() => {
-    refreshMe();
-  }, []);
 
   async function loadWatchlist() {
     setLoadingWL(true);
@@ -103,6 +129,7 @@ export default function App() {
       setLoadingWL(false);
     }
   }
+
   useEffect(() => {
     if (user) {
       loadWatchlist();

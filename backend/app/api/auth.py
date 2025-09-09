@@ -51,7 +51,7 @@ def login(user: UserLogin, response: Response, db: Session = Depends(get_db)):
         value=access_token,
         httponly=True,
         path="/",
-        max_age=60 * 60 * 24 * 7,
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         secure=IS_PROD,
         samesite="none" if IS_PROD else "lax",
     )
@@ -84,3 +84,30 @@ def me(
         raise HTTPException(status_code=404, detail="User not found")
 
     return db_user
+
+@router.post("/refresh")
+def refresh(
+    response: Response,
+    session: str | None = Cookie(default=None, alias=COOKIE_NAME),
+):
+    if not session:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    payload = decode_access_token(session)
+    if not payload or "sub" not in payload:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    new_token = create_access_token(
+        {"sub": payload["sub"]},
+        timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+    )
+    IS_PROD = os.getenv("ENV") == "prod"
+    response.set_cookie(
+        key=COOKIE_NAME,
+        value=new_token,
+        httponly=True,
+        path="/",
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        secure=IS_PROD,
+        samesite="none" if IS_PROD else "lax",
+    )
+    return {"ok": True}
