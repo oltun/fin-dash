@@ -11,7 +11,7 @@ app = FastAPI(title="FinDash API", version="0.1.0")
 
 origins = [
     "http://localhost:5173",
-    "https://YOUR-VERCEL-APP.vercel.app",
+    "fin-dash-seven.vercel.app",
 ]
 
 app.add_middleware(
