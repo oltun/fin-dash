@@ -1,0 +1,17 @@
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.vercel/
+backend/.venv/
+backend/__pycache__/
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.ruff_cache/
+**/*.pyc
+**/*.pyo
+**/*.pyd
