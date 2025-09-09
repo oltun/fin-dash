@@ -18,7 +18,6 @@ def get_db():
 
 @router.post("/register", response_model=UserOut)
 def register(user: UserCreate, db: Session = Depends(get_db)):
-    # check existing
     existing = db.query(models.User).filter_by(email=user.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -39,14 +38,15 @@ def login(user: UserLogin, response: Response, db: Session = Depends(get_db)):
 
     import os
     IS_PROD = os.getenv("ENV") == "prod"
+
     response.set_cookie(
         key="session",
         value=access_token,
         httponly=True,
-        samesite="none",
-        secure=IS_PROD,
         path="/",
         max_age=60*60*24*7,
+        secure=IS_PROD,
+        samesite="lax" if not IS_PROD else "none",
     )
 
     return {"message": "Logged in successfully"}
