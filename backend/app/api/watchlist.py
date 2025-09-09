@@ -9,6 +9,7 @@ from app.services.market_data import get_prices
 router = APIRouter(prefix="/api/v1/watchlist", tags=["watchlist"])
 
 @router.get("/", response_model=list[WatchlistOut])
+@router.get("", response_model=list[WatchlistOut], include_in_schema=False)
 def list_watchlist(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
@@ -16,6 +17,7 @@ def list_watchlist(
     return db.query(Watchlist).filter_by(user_id=user.id).all()
 
 @router.post("/", response_model=WatchlistOut, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=WatchlistOut, status_code=status.HTTP_201_CREATED, include_in_schema=False)
 def add_watchlist(
     item: WatchlistCreate,
     db: Session = Depends(get_db),
