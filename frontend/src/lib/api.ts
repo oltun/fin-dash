@@ -99,10 +99,10 @@ export type PricesResponse = {
 };
 
 export function getPrices(symbol: string, range = "1y", interval = "1d") {
-  return jsonFetch<PricesResponse>(
-    `/api/v1/prices?symbol=${encodeURIComponent(symbol)}&range=${range}&interval=${interval}`
-  );
-}
+    return jsonFetch<PricesResponse>(
+      `/api/v1/prices/?symbol=${encodeURIComponent(symbol)}&range=${range}&interval=${interval}`
+    );
+  }
 
 export type SnapshotMap = Record<string, { last: number; prev: number | null; pct: number | null } | null>;
 
