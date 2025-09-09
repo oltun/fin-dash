@@ -124,3 +124,10 @@ export type AgentScore = {
     const q = new URLSearchParams({ symbol, mode });
     return jsonFetch<AgentScore>(`/api/v1/agent/score?${q.toString()}`);
   }
+
+  export function refreshSession() {
+    return fetch(`${BASE}/api/v1/auth/refresh`, {
+      method: "POST",
+      credentials: "include",
+    });
+  }

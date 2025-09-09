@@ -1,8 +1,8 @@
 {
     "rewrites": [
-      { "source": "/api/v1/watchlist",   "destination": "https://fin-dash-api.onrender.com/api/v1/watchlist"   },
-      { "source": "/api/v1/watchlist/",  "destination": "https://fin-dash-api.onrender.com/api/v1/watchlist/"  },
-      { "source": "/api/:path*",         "destination": "https://fin-dash-api.onrender.com/api/:path*"         }
+      {
+        "source": "/api/:path*",
+        "destination": "https://fin-dash-api.onrender.com/api/:path*"
+      }
     ]
   }
-  
