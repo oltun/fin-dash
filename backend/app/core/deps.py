@@ -4,6 +4,8 @@ from app.db.session import SessionLocal
 from app.db.models import User
 from app.core.security import decode_access_token
 
+COOKIE_NAME = "session"
+
 def get_db():
     db = SessionLocal()
     try:
@@ -12,13 +14,13 @@ def get_db():
         db.close()
 
 def get_current_user(
-    access_token: str | None = Cookie(default=None),
+    session: str | None = Cookie(default=None, alias=COOKIE_NAME),
     db: Session = Depends(get_db),
 ) -> User:
-    if not access_token:
+    if not session:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
 
-    payload = decode_access_token(access_token)
+    payload = decode_access_token(session)
     if not payload or "sub" not in payload:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
