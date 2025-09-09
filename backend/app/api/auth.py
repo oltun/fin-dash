@@ -1,11 +1,18 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Request, Cookie
 from sqlalchemy.orm import Session
 from datetime import timedelta
+import os
 
 from app.db.session import SessionLocal
 from app.db import models
 from app.schemas.user import UserCreate, UserLogin, UserOut
-from app.core.security import hash_password, verify_password, create_access_token, decode_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
+from app.core.security import (
+    hash_password,
+    verify_password,
+    create_access_token,
+    decode_access_token,
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+)
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
@@ -15,6 +22,8 @@ def get_db():
         yield db
     finally:
         db.close()
+
+COOKIE_NAME = "session"
 
 @router.post("/register", response_model=UserOut)
 def register(user: UserCreate, db: Session = Depends(get_db)):
@@ -36,32 +45,36 @@ def login(user: UserLogin, response: Response, db: Session = Depends(get_db)):
 
     access_token = create_access_token({"sub": str(db_user.id)}, timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
 
-    import os
     IS_PROD = os.getenv("ENV") == "prod"
-
     response.set_cookie(
-        key="session",
+        key=COOKIE_NAME,
         value=access_token,
         httponly=True,
         path="/",
-        max_age=60*60*24*7,
+        max_age=60 * 60 * 24 * 7,
         secure=IS_PROD,
-        samesite="lax" if not IS_PROD else "none",
+        samesite="none" if IS_PROD else "lax",
     )
 
     return {"message": "Logged in successfully"}
 
 @router.post("/logout")
 def logout(response: Response):
-    response.delete_cookie("access_token")
+    response.delete_cookie(
+        key=COOKIE_NAME,
+        path="/",
+    )
     return {"message": "Logged out"}
 
 @router.get("/me", response_model=UserOut)
-def me(access_token: str | None = Cookie(default=None), db: Session = Depends(get_db)):
-    if not access_token:
+def me(
+    session: str | None = Cookie(default=None, alias=COOKIE_NAME),
+    db: Session = Depends(get_db),
+):
+    if not session:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
-    payload = decode_access_token(access_token)
+    payload = decode_access_token(session)
     if not payload or "sub" not in payload:
         raise HTTPException(status_code=401, detail="Invalid token")
 
