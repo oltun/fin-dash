@@ -15,7 +15,12 @@ def hash_password(password: str) -> str:
 def verify_password(password: str, hashed: str) -> bool:
     return pwd_context.verify(password, hashed)
 
-SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret")  
+ENV = os.getenv("ENV", "dev")
+SECRET_KEY = os.getenv("SECRET_KEY")
+if ENV == "prod" and not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY must be set in production")
+if not SECRET_KEY:
+    SECRET_KEY = "dev-only-fallback"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
 
