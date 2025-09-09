@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -6,6 +7,7 @@ from datetime import datetime, timezone
 from app.api import auth, watchlist, prices, snapshots, agent
 from app.db.session import SessionLocal, engine
 from app.db.models import User
+from app.core.security import SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES
 
 app = FastAPI(title="FinDash API", version="0.1.0")
 
@@ -53,3 +55,5 @@ app.include_router(watchlist.router)
 app.include_router(prices.router)
 app.include_router(snapshots.router)
 app.include_router(agent.router)
+
+print(f"[startup] ENV={os.getenv('ENV')}, SECRET_KEY set={bool(SECRET_KEY)}, len={len(SECRET_KEY) if SECRET_KEY else 0}, EXP_MIN={ACCESS_TOKEN_EXPIRE_MINUTES}")
